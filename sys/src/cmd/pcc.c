@@ -20,8 +20,10 @@ Objtype objtype[] = {
 	{"sparc",	"kc", "kl", "k", "k.out"},
 	{"power",	"qc", "ql", "q", "q.out"},
 	{"mips",	"vc", "vl", "v", "v.out"},
+	{"riscv",	"ic", "il", "i", "i.out"},
+	{"riscv64",	"jc", "jl", "j", "j.out"},
 };
-char	*allos = "05689kqv";
+char	*allos = "05689kqvij";
 
 enum {
 	Nobjs = (sizeof objtype)/(sizeof objtype[0]),

@@ -1,0 +1,18 @@
+objtype=riscv64
+</$objtype/mkfile
+
+LIB=/$objtype/lib/libc.a
+SFILES=\
+
+CFILES=\
+
+HFILES=/sys/include/libc.h
+
+OFILES=${CFILES:%.c=%.$O} ${SFILES:%.s=%.$O}
+
+UPDATE=mkfile\
+	$HFILES\
+	$CFILES\
+	$SFILES\
+
+</sys/src/cmd/mksyslib

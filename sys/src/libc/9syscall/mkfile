@@ -110,6 +110,24 @@ install:V:
 				MOVW R3,4(R8)'
 			}
 			echo RETURN
+		case riscv
+			echo TEXT $i'(SB)', 1, '$0'
+			echo MOVW R8, '0(FP)'
+			echo MOVW '$'$n, R8
+			echo WORD '$0x73'		# ECALL
+			if(~ $i seek) {
+				echo 'MOVW $-1, R9
+				BNE R8, R9, 4(PC)
+				MOVW a+0(FP),R9
+				MOVW R8,0(R9)
+				MOVW R8,4(R9)'
+			}
+			if(~ $i nsec) {
+				echo 'MOVW a+0(FP),R10
+				MOVW R8,0(R10)
+				MOVW R9,4(R10)'
+			}
+			echo RET
 		}} > $i.s
 		$AS $i.s
 	}
