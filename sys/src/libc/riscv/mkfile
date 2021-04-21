@@ -16,7 +16,6 @@ SFILES=\
 	memmove.s\
 	memset.s\
 	setjmp.s\
-	setsb.s\
 	strchr.s\
 	strcmp.s\
 	strcpy.s\

@@ -313,10 +313,6 @@ objfile(char *file)
 		goto out;
 	}
 
-	if(debug['v']){
-		Bprint(&bso, "%5.2f arhdr.size %.60s \n", cputime(), arhdr.name);
-		Bprint(&bso, "%5.2f arhdr %#p size %#p \n", cputime(), &arhdr, arhdr.size);
-	}
 	esym = SARMAG + SAR_HDR + atolwhex(arhdr.size);
 	off = SARMAG + SAR_HDR;
 
@@ -326,10 +322,7 @@ objfile(char *file)
 	seek(f, off, 0);
 	cnt = esym - off;
 	start = malloc(cnt + 10);
-	long ocnt = cnt;
 	cnt = read(f, start, cnt);
-	if(debug['v'])
-		Bprint(&bso, "%5.2f read %#p for %ld => %ld\n", cputime(), start, ocnt, cnt);
 	if(cnt <= 0){
 		close(f);
 		return;
@@ -946,10 +939,17 @@ loop:
 		autosize = p->to.offset;
 		if(autosize < 0)
 			autosize = -ptrsize;
-		else
-			autosize = (autosize + ptrsize - 1) & ~(ptrsize - 1);
+		else if(autosize != 0){
+			autosize = (autosize + 3) & ~3;
+			if(thechar == 'j'){
+				if((autosize & 4) != 0)
+					autosize += 4;
+			}else{
+				if((autosize & 4) == 0)
+					autosize += 4;
+			}
+		}
 		p->to.offset = autosize;
-		autosize += ptrsize;
 		s = p->from.sym;
 		if(s == S) {
 			diag("TEXT must have a name\n%P", p);

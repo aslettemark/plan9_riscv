@@ -315,7 +315,7 @@ asmsym(void)
 			putsymb(s->name, 'L', s->value+INITTEXT, s->version);
 
 		/* frame, auto and param after */
-		putsymb(".frame", 'm', p->to.offset+4, 0);
+		putsymb(".frame", 'm', p->to.offset+ptrsize, 0);
 		for(a=p->to.autom; a; a=a->link)
 			if(a->type == D_AUTO)
 				putsymb(a->asym->name, 'a', -a->aoffset, 0);
@@ -508,7 +508,7 @@ datblk(long s, long n, int str)
 				fl = ieeedtof(p->to.ieee);
 				cast = (char*)&fl;
 				for(; i<c; i++) {
-					buf.dbuf[l] = cast[fnuxi8[i+4]];
+					buf.dbuf[l] = cast[fnuxi8[i]];
 					l++;
 				}
 				break;

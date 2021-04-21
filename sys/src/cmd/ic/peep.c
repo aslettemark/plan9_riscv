@@ -45,9 +45,14 @@ peep(void)
 	 */
 	for(r=firstr; r!=R; r=r->link) {
 		p = r->prog;
+		if(debug['P']) print("PEEP1: %P\n", p);
 		switch(p->as) {
 		default:
 			continue;
+		case AMOVW:
+		case AMOVWU:
+			if(thechar == 'i')
+				continue;
 		case AMOVH:
 		case AMOVHU:
 		case AMOVB:
@@ -69,14 +74,16 @@ peep(void)
 		if(p1->to.reg == p->to.reg)
 			excise(r1);
 		else
-			p1->as = AMOVW;
+			p1->as = thechar == 'i' ? AMOVW : AMOV;
 	}
 
 loop1:
 	t = 0;
 	for(r=firstr; r!=R; r=r->link) {
 		p = r->prog;
-		if(p->as == AMOVW || p->as == AMOVWU || p->as == AMOV || p->as == AMOVF || p->as == AMOVD)
+		if(debug['P']) print("PEEP2: %P\n", p);
+		if((thechar == 'i' && (p->as == AMOVW || p->as == AMOVWU)) ||
+			p->as == AMOV || p->as == AMOVF || p->as == AMOVD)
 		if(regtyp(&p->to)) {
 			if(regtyp(&p->from))
 			if(p->from.type == p->to.type) {
@@ -233,6 +240,8 @@ subprop(Reg *r0)
 		case AMUL:  case AMULW:
 		case ADIV:  case ADIVW:
 		case ADIVU: case ADIVUW:
+		case AREM:	case AREMW:
+		case AREMU:	case AREMUW:
 
 		case AADDD:
 		case AADDF:
@@ -478,6 +487,8 @@ copyu(Prog *p, Adr *v, Adr *s)
 	case AMUL:  case AMULW:
 	case ADIV:  case ADIVW:
 	case ADIVU: case ADIVUW:
+	case AREM:	case AREMW:
+	case AREMU:	case AREMUW:
 
 	case AADDF:
 	case AADDD:
@@ -614,6 +625,8 @@ a2type(Prog *p)
 	case AMUL:  case AMULW:
 	case ADIV:  case ADIVW:
 	case ADIVU: case ADIVUW:
+	case AREM:	case AREMW:
+	case AREMU:	case AREMUW:
 		return D_REG;
 
 	case ACMPEQD:

@@ -113,6 +113,7 @@ asmcstore(Prog *p, int a, uint len, uint maxoff)
 	return 0;
 }
 
+int
 asmcompressed(Prog *p, Optab *o, int r, int first)
 {
 	long v;

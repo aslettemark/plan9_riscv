@@ -430,7 +430,7 @@ err:
 void
 regsalloc(Node *n, Node *nn)
 {
-	cursafe = align(cursafe, nn->type, Aaut3);
+	cursafe = align(cursafe + stkoff, nn->type, Aaut3) - stkoff;
 	maxargsafe = maxround(maxargsafe, cursafe+curarg);
 	*n = *nodsafe;
 	n->xoffset = -(stkoff + cursafe);
@@ -625,6 +625,9 @@ gmove(Node *f, Node *t)
 	ft = f->type->etype;
 	tt = t->type->etype;
 
+	if(debug['O'])
+		print("gmove: %O[%T],%O[%T]\n",
+			f->op, f->type, t->op, t->type);
 	if(ft == TDOUBLE && f->op == OCONST) {
 		d = f->fconst;
 		if(d == 0) {
@@ -713,7 +716,7 @@ gmove(Node *f, Node *t)
 			break;
 		case TUINT:
 		case TULONG:
-			a = AMOVWU;
+			a = AMOVW;	/* sic */
 			break;
 		case TIND:
 			a = thechar == 'j' ? AMOV : AMOVW;
@@ -740,10 +743,18 @@ gmove(Node *f, Node *t)
 			a = AMOVW;
 			break;
 		case TUCHAR:
+			if(!debug['N'] || debug['R'] || debug['P']){
+				a = AMOVBU;
+				break;
+			}
 		case TCHAR:
 			a = AMOVB;
 			break;
 		case TUSHORT:
+			if(!debug['N'] || debug['R'] || debug['P']){
+				a = AMOVHU;
+				break;
+			}
 		case TSHORT:
 			a = AMOVH;
 			break;
@@ -901,7 +912,10 @@ gmove(Node *f, Node *t)
 		case TUSHORT:
 		case TCHAR:
 		case TUCHAR:
-			a = AMOV;
+			if(thechar == 'j' && f->op == OCONST)
+				a = AMOVW;
+			else
+				a = AMOV;
 			break;
 		}
 		break;
@@ -1067,6 +1081,18 @@ gopcode(int o, Node *f1, Node *f2, Node *t)
 	et = TLONG;
 	if(f1 != Z && f1->type != T)
 		et = f1->type->etype;
+	if(debug['O']) {
+		if(f1 != Z && f1->type != T)
+			print("gop: %O %O[%s],", o, f1->op, tnames[et]);
+		else
+			print("gop: %O Z,", o);
+		if(f2 != Z && f2->type != T)
+			print("%O[%s],", f2->op, tnames[f2->type->etype]);
+		if(t != Z && t->type != T)
+			print("%O[%s]\n", t->op, tnames[t->type->etype]);
+		else
+			print("Z\n");
+	}
 	a = AGOK;
 	switch(o) {
 	case OAS:

@@ -99,44 +99,48 @@ enum	as
 	AXOR,
 
 	/* floating point */
-	AMOVF,      // FLW, FSW, FSGNJ.S
-	AMOVD,      // FLD, FSD, FSGNJ.D
-	AMOVFD,     // FCVT.D.S
-	AMOVDF,     // FCVT.S.D
-	AMOVWF,     // FCVT.S.W
-	AMOVUF,     // FCVT.S.WU
-	AMOVFW,     // FCVT.W.S
-	AMOVWD,     // FCVT.D.W
-	AMOVUD,     // FCVT.D.WU
-	AMOVDW,     // FCVT.W.D
-	AADDF,      // FADD.S
-	AADDD,      // FADD.D
-	ASUBF,      // FSUB.S
-	ASUBD,      // FSUB.D
-	AMULF,      // FMUL.S
-	AMULD,      // FMUL.D
-	ADIVF,      // FDIV.S
-	ADIVD,      // FDIV.D
-	ACMPLTF,     // FLT.S
-	ACMPLTD,     // FLT.D
-	ACMPEQF,     // FEQ.S
-	ACMPEQD,     // FEQ.D
-	ACMPLEF,     // FLE.S
-	ACMPLED,     // FLE.S
-	//			FMADD.S,	FMADD.D
-	//			FMSUB.S,	FMSUB.D
-	//			FNMSUB.S,	FNMSUB.D
-	//			FNMADD.S,	FNMADD.D
-	//			FSQRT.S,	FSQRT.D
-	//			FSGNJ.S,	FSGNJ.D
-	//			FSGNJN.S,	FSGNJN.D
-	//			FSGNNX.S,	FSGNNX.D
-	//			FMIN.S,		FMIN.D
-	//			FMAX.S,		FMAX.D
-	//			FMV.X.W
-	//			FCLASS.S	FCLASS.D
-	//			FCVT.WU.S	FCVT.WU.D
-	//			FMV.W.X
+	AMOVF,      /* FLW, FSW, FSGNJ.S */
+	AMOVD,      /* FLD, FSD, FSGNJ.D */
+	AMOVFD,     /* FCVT.D.S */
+	AMOVDF,     /* FCVT.S.D */
+	AMOVWF,     /* FCVT.S.W */
+	AMOVUF,     /* FCVT.S.WU */
+	AMOVFW,     /* FCVT.W.S */
+	AMOVWD,     /* FCVT.D.W */
+	AMOVUD,     /* FCVT.D.WU */
+	AMOVDW,     /* FCVT.W.D */
+	AADDF,      /* FADD.S */
+	AADDD,      /* FADD.D */
+	ASUBF,      /* FSUB.S */
+	ASUBD,      /* FSUB.D */
+	AMULF,      /* FMUL.S */
+	AMULD,      /* FMUL.D */
+	ADIVF,      /* FDIV.S */
+	ADIVD,      /* FDIV.D */
+	ACMPLTF,     /* FLT.S */
+	ACMPLTD,     /* FLT.D */
+	ACMPEQF,     /* FEQ.S */
+	ACMPEQD,     /* FEQ.D */
+	ACMPLEF,     /* FLE.S */
+	ACMPLED,     /* FLE.S */
+
+	/* floating point instructions not included */
+/*
+	FMADD.S    FMADD.D
+	FMSUB.S    FMSUB.D
+	FNMSUB.S   FNMSUB.D
+	FNMADD.S   FNMADD.D
+	FSQRT.S    FSQRT.D
+	FSGNJ.S    FSGNJ.D
+	FSGNJN.S   FSGNJN.D
+	FSGNNX.S   FSGNNX.D
+	FMIN.S     FMIN.D
+	FMAX.S     FMAX.D
+	FMV.X.W
+	FCLASS.S   FCLASS.D
+	FCVT.WU.S  FCVT.WU.D
+	FMV.W.X
+ */
 
 
 	/* pseudo-ops */

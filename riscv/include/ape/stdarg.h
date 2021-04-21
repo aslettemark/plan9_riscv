@@ -14,5 +14,7 @@ typedef char *va_list;
 		((list += 4), (mode*)list)[-4]:\
 	(sizeof(mode) == 2)?\
 		((list += 4), (mode*)list)[-2]:\
-		((list += sizeof(mode)), (mode*)list)[-1])
+	(sizeof(mode) == 4)?\
+		((list += 4), (mode*)list)[-1]:\
+		((list = (char*)((unsigned long)(list+7) & ~7) + sizeof(mode)), (mode*)list)[-1])
 #endif /* __STDARG */

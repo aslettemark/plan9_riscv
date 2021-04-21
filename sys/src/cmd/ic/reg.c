@@ -434,10 +434,21 @@ brk:
 
 	/*
 	 * last pass
+	 * fix unsigned stores (needed as type hint in pass 6)
 	 * eliminate nops
 	 * free aux structures
 	 */
 	for(p = firstr->prog; p != P; p = p->link){
+		if(p->to.type == D_OREG){
+			switch(p->as){
+			case AMOVBU:
+				p->as = AMOVB;
+				break;
+			case AMOVHU:
+				p->as = AMOVH;
+				break;
+			}
+		}
 		while(p->link && p->link->as == ANOP)
 			p->link = p->link->link;
 	}
@@ -1048,15 +1059,15 @@ paint3(Reg *r, int bn, long rb, int rn)
 			if(debug['R'])
 				print("%P", p);
 			addreg(&p->from, rn);
-#ifdef maybe
 			switch(p->as){
 			case AMOVB:
 			case AMOVBU:
 			case AMOVH:
 			case AMOVHU:
-				p->as = AMOVW;
+			case AMOVW:
+			case AMOVWU:
+				p->as = AMOV;
 			}
-#endif
 			if(debug['R'])
 				print("\t.c%P\n", p);
 		}

@@ -536,55 +536,37 @@ zaddr(char *bp, Adr *a, int s)
 	return bp;
 }
 
-static long
-structalign(long max, Type *t)
-{
-	Type *v;
-	int w;
-
-	if(typesu[t->etype]){
-		for(v = t->link; v != T; v = v->down){
-			max = structalign(max, v);
-			if(max >= SZ_VLONG)
-				return max;
-		}
-	}else if (t->etype == TARRAY){
-		for(v = t; v->etype == TARRAY; v = v->link)
-			;
-		max = structalign(max, v);
-	}else{
-		w = ewidth[t->etype];
-		if(typev[t->etype] && thechar == 'i')
-			w = SZ_LONG;
-		if(w <= 0)
-			w = ewidth[TIND];
-		if(w > max)
-			max = w;
-	}
-	return max;
-}
-
 long
 align(long i, Type *t, int op)
 {
 	long o;
+	Type *v;
 	int w;
+	int linksave;
 
 	o = i;
 	w = 1;
+	linksave = 0;
 	switch(op) {
 	default:
 		diag(Z, "unknown align opcode %d", op);
 		break;
 
 	case Asu2:	/* padding at end of a struct */
-		w = structalign(SZ_LONG, t);
+		if(o <= SZ_LONG)
+			w = SZ_LONG;
+		else
+			w = SZ_VLONG;
 		if(packflg)
 			w = packflg;
 		break;
 
 	case Ael1:	/* initial align of struct element */
-		w = structalign(1, t);
+		for(v=t; v->etype==TARRAY; v=v->link)
+			;
+		w = v->width;
+		if(w <= 0 || w >= SZ_VLONG)
+			w = SZ_VLONG;
 		if(packflg)
 			w = packflg;
 		break;
@@ -601,12 +583,15 @@ align(long i, Type *t, int op)
 		break;
 
 	case Aarg1:	/* initial align of parameter */
-		w = ewidth[t->etype];
+		w = t->width;
 		if(w > 0 && w <= SZ_LONG){
 			w = 1;		/* little endian no adjustment */
 			break;
 		}
-		w = structalign(SZ_LONG, t);
+		if(w < SZ_VLONG)
+			diag(Z, "compiler bug? type %T width %d\n", t, w);
+		w = SZ_VLONG;
+		linksave = ewidth[TIND];
 		break;
 
 	case Aarg2:	/* width of a parameter */
@@ -619,7 +604,7 @@ align(long i, Type *t, int op)
 		o = align(o, t, Ael2);
 		break;
 	}
-	o = round(o, w);
+	o = round(o + linksave, w) - linksave;
 	if(debug['A'])
 		print("align %s %ld %T = %ld\n", bnames[op], i, t, o);
 	return o;

@@ -63,7 +63,6 @@ noops(void)
 			break;
 
 		/* too hard, just leave alone */
-		//case ACASE:
 		case ASYS:
 		case AWORD:
 			p->mark |= LABEL|SYNC;
@@ -158,10 +157,14 @@ noops(void)
 		case ATEXT:
 			curtext = p;
 			autosize = p->to.offset + ptrsize;
-			if(autosize <= ptrsize)
-			if(curtext->mark & LEAF) {
-				p->to.offset = -ptrsize;
-				autosize = 0;
+			if(autosize <= ptrsize) {
+				if(curtext->mark & LEAF || autosize <= 0) {
+					p->to.offset = -ptrsize;
+					autosize = 0;
+				} else if(ptrsize == 4) {
+					p->to.offset = 4;
+					autosize = 8;
+				}
 			}
 
 			q = p;

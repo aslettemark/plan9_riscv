@@ -104,6 +104,7 @@ xcom(Node *n)
 			n->op = OASASHL;
 			r->vconst = t;
 			r->type = types[TINT];
+			goto shiftassign;
 		}
 		break;
 
@@ -135,6 +136,7 @@ xcom(Node *n)
 			n->op = OASLSHR;
 			r->vconst = t;
 			r->type = types[TINT];
+			goto shiftassign;
 		}
 		break;
 
@@ -176,6 +178,23 @@ xcom(Node *n)
 		xcom(l);
 		xcom(r);
 		simplifyshift(n);
+		break;
+
+	case OASLSHR:
+	case OASASHL:
+	case OASASHR:
+		xcom(l);
+		xcom(r);
+	shiftassign:
+		if(typev[l->type->etype] && !machcap(n) && !typev[r->type->etype]){
+			if(r->op == OCONST)
+				r->type = types[TVLONG];
+			else{
+				n->right = r = new1(OCAST, r, Z);
+				r->type = types[TVLONG];
+				xcom(r);
+			}
+		}
 		break;
 
 	default:
