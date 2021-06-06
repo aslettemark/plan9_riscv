@@ -1,0 +1,114 @@
+CONF=qrv32
+CONFLIST=qrv32
+EXTRACOPIES=
+
+loadaddr=0x80400000
+
+objtype=riscv
+</$objtype/mkfile
+p=9
+
+DEVS=`{rc ../port/mkdevlist $CONF}
+
+PORT=\
+	alarm.$O\
+	alloc.$O\
+	allocb.$O\
+	auth.$O\
+	cache.$O\
+	chan.$O\
+	dev.$O\
+	edf.$O\
+	fault.$O\
+	mul64fract.$O\
+	page.$O\
+	parse.$O\
+	pgrp.$O\
+	portclock.$O\
+	print.$O\
+	proc.$O\
+	qio.$O\
+	qlock.$O\
+	rdb.$O\
+	rebootcmd.$O\
+	segment.$O\
+	swap.$O\
+	syscallfmt.$O\
+	sysfile.$O\
+	sysproc.$O\
+	taslock.$O\
+	tod.$O\
+	xalloc.$O\
+	random.$O\
+
+OBJ=\
+	l.$O\
+	$CONF.root.$O\
+	$CONF.rootc.$O\
+	$DEVS\
+	$PORT\
+	clock.$O\
+	arch.$O\
+	mmu.$O\
+	syscall.$O\
+	main.$O\
+	sbi.$O\
+	trap.$O\
+	conf.$O\
+
+
+HFILES=\
+	mem.h\
+	dat.h\
+	fns.h\
+	io.h\
+	external/sbi.h\
+	csr.h\
+	riscv_asm.h\
+	qrv32_init.h\
+
+LIB=\
+	/$objtype/lib/libip.a\
+	/$objtype/lib/libc.a\
+
+9:V: $p$CONF s$p$CONF
+
+CFLAGS=-wFV  # not T
+
+$p$CONF:DQ:	$CONF.c $OBJ $LIB mkfile
+	$CC $CFLAGS '-DKERNDATE='`{date -n} $CONF.c
+	echo '# linking raw kernel'
+	$LD -u -l -o $target -H5 -R4096 -T$loadaddr $OBJ $CONF.$O $LIB
+	size $target
+
+s$p$CONF:DQ:	$CONF.c $OBJ $LIB mkfile
+	$CC $CFLAGS '-DKERNDATE='`{date -n} $CONF.c
+	$LD -u -l -o $target -H5 -R4096 -T$loadaddr $OBJ $CONF.$O $LIB
+
+$OBJ: $HFILES /$objtype/include/ureg.h
+
+install:V: /$objtype/$p$CONF
+
+/$objtype/$p$CONF:D: $p$CONF s$p$CONF
+	cp -x $p$CONF s$p$CONF /$objtype/ &
+	for(i in $EXTRACOPIES)
+		{ 9fs $i && cp $p$CONF s$p$CONF /n/$i/$objtype && echo -n $i... & }
+	wait
+	echo
+	touch $target
+
+<../boot/bootmkfile
+<../port/portmkfile
+<|../port/mkbootrules $CONF
+
+qrv32_init.h:D: qrv32_initcode.c qrv32_init9.s
+	$CC qrv32_initcode.c
+	$AS qrv32_init9.s
+	$LD -l -R1 -s -o qrv32_init.out qrv32_init9.$O qrv32_initcode.$O /$objtype/lib/libc.a
+	{echo 'uchar qrv32_initcode[]={'
+	 xd -1x <qrv32_init.out |
+		sed -e 's/^[0-9a-f]+ //' -e 's/ ([0-9a-f][0-9a-f])/0x\1,/g'
+	 echo '};'} > qrv32_init.h
+
+init.h:
+	touch init.h

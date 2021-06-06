@@ -1,0 +1,17 @@
+*.txt
+*.i
+*.out
+
+9qrv32
+errstr.h
+qrv32.c
+qrv32.root.s
+qrv32.rootc.c
+s9qrv32
+init.out
+init.h
+qrv32_init.h
+bootqrv32.c
+
+update.sh
+

@@ -1,0 +1,48 @@
+dev
+	root
+	cons
+	env
+	mnt
+	pipe
+	srv
+	proc
+	dup
+	uart
+	ip 			ipaux iproute netlog arp ipv6 ip inferno chandial pktmedium nullmedium
+
+link
+	loopbackmedium
+	ethermedium
+
+ip
+	tcp
+	udp
+	ipifc
+	icmp
+	icmp6
+	ipmux
+
+port
+	int cpuserver = 1;
+
+#bootdir
+#	boot.rc			boot
+#	/riscv/bin/rc
+#	/rc/lib/rcmain
+#	/riscv/bin/mount
+#	/riscv/bin/bind
+#	/riscv/bin/echo
+#	/riscv/bin/ls
+#	/riscv/bin/cat
+
+#	/riscv/bin/disk/fdisk
+#	/riscv/bin/dossrv
+#	/riscv/bin/usb/usbd
+
+#boot cpu boot #S/sdM0/
+boot
+#	local
+	tcp
+
+bootdir
+	boot$CONF.out	boot
